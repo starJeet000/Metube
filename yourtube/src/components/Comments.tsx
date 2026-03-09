@@ -5,6 +5,8 @@ import { Button } from "./ui/button";
 import { formatDistanceToNow } from "date-fns";
 import { useUser } from "@/lib/AuthContext";
 import axiosInstance from "@/lib/axiosinstance";
+import axios from "axios"; // Added for fetching IP geolocation
+
 interface Comment {
   _id: string;
   videoid: string;
@@ -12,7 +14,9 @@ interface Comment {
   commentbody: string;
   usercommented: string;
   commentedon: string;
+  location?: string; // Added to track city
 }
+
 const Comments = ({ videoId }: any) => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState("");
@@ -21,6 +25,10 @@ const Comments = ({ videoId }: any) => {
   const [editText, setEditText] = useState("");
   const { user } = useUser();
   const [loading, setLoading] = useState(true);
+
+  // Task 1: State for User's City
+  const [userCity, setUserCity] = useState("Fetching location...");
+
   const fetchedComments = [
     {
       _id: "1",
@@ -39,9 +47,28 @@ const Comments = ({ videoId }: any) => {
       commentedon: new Date(Date.now() - 7200000).toISOString(),
     },
   ];
+
   useEffect(() => {
     loadComments();
   }, [videoId]);
+
+  // Task 1: Fetch location on component mount
+  useEffect(() => {
+    const fetchLocation = async () => {
+      try {
+        const response = await axios.get("https://ipapi.co/json/");
+        if (response.data.city) {
+          setUserCity(response.data.city);
+        } else {
+          setUserCity("Unknown City");
+        }
+      } catch (error) {
+        console.error("Location fetch failed", error);
+        setUserCity("Unknown City");
+      }
+    };
+    fetchLocation();
+  }, []);
 
   const loadComments = async () => {
     try {
@@ -53,11 +80,20 @@ const Comments = ({ videoId }: any) => {
       setLoading(false);
     }
   };
+
   if (loading) {
     return <div>Loading history...</div>;
   }
+
   const handleSubmitComment = async () => {
     if (!user || !newComment.trim()) return;
+
+    // Task 1: Validation for special characters
+    const forbiddenChars = /[@#$%]/;
+    if (forbiddenChars.test(newComment)) {
+      alert("Comments cannot contain special characters like @, #, $, or %");
+      return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -66,6 +102,7 @@ const Comments = ({ videoId }: any) => {
         userid: user._id,
         commentbody: newComment,
         usercommented: user.name,
+        location: userCity, // Send location to the backend
       });
       if (res.data.comment) {
         const newCommentObj: Comment = {
@@ -75,6 +112,7 @@ const Comments = ({ videoId }: any) => {
           commentbody: newComment,
           usercommented: user.name || "Anonymous",
           commentedon: new Date().toISOString(),
+          location: userCity, // Append location to local UI state immediately
         };
         setComments([newCommentObj, ...comments]);
       }
@@ -122,6 +160,7 @@ const Comments = ({ videoId }: any) => {
       console.log(error);
     }
   };
+
   return (
     <div className="space-y-6">
       <h2 className="text-xl font-semibold">{comments.length} Comments</h2>
@@ -139,20 +178,25 @@ const Comments = ({ videoId }: any) => {
               onChange={(e: any) => setNewComment(e.target.value)}
               className="min-h-[80px] resize-none border-0 border-b-2 rounded-none focus-visible:ring-0"
             />
-            <div className="flex gap-2 justify-end">
-              <Button
-                variant="ghost"
-                onClick={() => setNewComment("")}
-                disabled={!newComment.trim()}
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleSubmitComment}
-                disabled={!newComment.trim() || isSubmitting}
-              >
-                Comment
-              </Button>
+
+            {/* Task 1: Added a wrapper flexbox to show the city on the left and buttons on the right */}
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-gray-500">Posting from: {userCity}</span>
+              <div className="flex gap-2 justify-end">
+                <Button
+                  variant="ghost"
+                  onClick={() => setNewComment("")}
+                  disabled={!newComment.trim()}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleSubmitComment}
+                  disabled={!newComment.trim() || isSubmitting}
+                >
+                  Comment
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -176,6 +220,9 @@ const Comments = ({ videoId }: any) => {
                   </span>
                   <span className="text-xs text-gray-600">
                     {formatDistanceToNow(new Date(comment.commentedon))} ago
+
+                    {/* Task 1: Render the city if it exists on the comment */}
+                    {comment.location && ` • from ${comment.location}`}
                   </span>
                 </div>
 
