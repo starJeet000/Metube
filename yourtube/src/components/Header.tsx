@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { Input } from "./ui/input";
+import { useSidebar } from "@/lib/SidebarContext";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +19,7 @@ import { useUser } from "@/lib/AuthContext";
 
 const Header = () => {
   const { user, logout, handlegooglesignin } = useUser();
+  const { toggleSidebar } = useSidebar();
   // const user: any = {
   //   id: "1",
   //   name: "John Doe",
@@ -26,19 +29,22 @@ const Header = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isdialogeopen, setisdialogeopen] = useState(false);
   const router = useRouter();
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
     }
   };
+
   const handleKeypress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       handleSearch(e as any);
     }
   };
+
   return (
-    <header className="flex items-center justify-between px-4 py-2 bg-white border-b">
+    <header className="flex items-center justify-between px-4 py-2 bg-background text-foreground border-b">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon">
           <Menu className="w-6 h-6" />
@@ -53,6 +59,7 @@ const Header = () => {
           <span className="text-xs text-gray-400 ml-1">IN</span>
         </Link>
       </div>
+
       <form
         onSubmit={handleSearch}
         className="flex items-center gap-2 flex-1 max-w-2xl mx-4"
@@ -77,7 +84,11 @@ const Header = () => {
           <Mic className="w-5 h-5" />
         </Button>
       </form>
-      <div className="flex items-center gap-2">
+
+      <div className="flex items-center gap-4">
+        <Button variant="ghost" size="icon" onClick={toggleSidebar}></Button>
+        <Menu className="w-6 h-6" />
+
         {user ? (
           <>
             <Button variant="ghost" size="icon">
