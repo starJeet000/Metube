@@ -1,5 +1,5 @@
 import { Bell, Menu, Mic, Search, User, VideoIcon } from "lucide-react";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { Input } from "./ui/input";
@@ -37,6 +37,16 @@ const Header = () => {
       handleSearch(e as any);
     }
   };
+
+  const [isPremium, setIsPremium] = useState(false);
+
+  useEffect(() => {
+    // Check local storage on mount
+    if (localStorage.getItem("yt_user_isPremium") === "true") {
+      setIsPremium(true);
+    }
+  }, []);
+
   return (
     <header className="flex items-center justify-between px-4 py-2 bg-white border-b">
       <div className="flex items-center gap-4">
@@ -90,8 +100,14 @@ const Header = () => {
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="relative h-8 w-8 rounded-full"
+                  className="relative h-8 rounded-full flex items-center gap-2"
                 >
+                  {/* The new PRO Badge! */}
+                  {isPremium && (
+                    <span className="bg-yellow-500 text-black text-[10px] font-extrabold px-1.5 py-0.5 rounded-sm tracking-wider">
+                      PRO
+                    </span>
+                  )}
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={user.image} />
                     <AvatarFallback>{user.name?.[0] || "U"}</AvatarFallback>
