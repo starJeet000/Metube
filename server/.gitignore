@@ -1,0 +1,18 @@
+node_modules/
+.env
+=======
+# Ignore dependency folders
+node_modules/
+server/node_modules/
+yourtube/node_modules/
+
+# Ignore environment variables (Secrets)
+.env
+server/.env
+yourtube/.env
+
+# Ignore build folders
+yourtube/.next/
+yourtube/out/
+yourtube/build/
+>>>>>>> 0de3853 (feat: complete backend auth setup and fix git tracking)
