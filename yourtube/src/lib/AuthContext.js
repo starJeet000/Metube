@@ -10,19 +10,26 @@ const UserContext = createContext();
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
-  const login = (userdata) => {
+  // 🌟 UPDATED: Now accepts the token and saves it to localStorage
+  const login = (userdata, token) => {
     setUser(userdata);
     localStorage.setItem("user", JSON.stringify(userdata));
+    if (token) {
+      localStorage.setItem("token", token);
+    }
   };
+
   const logout = async () => {
     setUser(null);
     localStorage.removeItem("user");
+    localStorage.removeItem("token"); // 🌟 NEW: Wipe the token on logout!
     try {
       await signOut(auth);
     } catch (error) {
       console.error("Error during sign out:", error);
     }
   };
+
   const handlegooglesignin = async () => {
     try {
       const result = await signInWithPopup(auth, provider);
@@ -33,11 +40,14 @@ export const UserProvider = ({ children }) => {
         image: firebaseuser.photoURL || "https://github.com/shadcn.png",
       };
       const response = await axiosInstance.post("/user/login", payload);
-      login(response.data.result);
+      
+      // 🌟 UPDATED: Pass both the user data AND the token
+      login(response.data.result, response.data.token);
     } catch (error) {
       console.error(error);
     }
   };
+
   useEffect(() => {
     const unsubcribe = onAuthStateChanged(auth, async (firebaseuser) => {
       if (firebaseuser) {
@@ -48,7 +58,9 @@ export const UserProvider = ({ children }) => {
             image: firebaseuser.photoURL || "https://github.com/shadcn.png",
           };
           const response = await axiosInstance.post("/user/login", payload);
-          login(response.data.result);
+          
+          // 🌟 UPDATED: Pass both the user data AND the token
+          login(response.data.result, response.data.token);
         } catch (error) {
           console.error(error);
           logout();
