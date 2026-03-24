@@ -9,16 +9,28 @@ import likeroutes from "./routes/like.js";
 import watchlaterroutes from "./routes/watchlater.js";
 import historyrroutes from "./routes/history.js";
 import commentroutes from "./routes/comment.js";
+import paymentRoutes from "./routes/payment.js";
+import path from "path";
+import { fileURLToPath } from "url"; // 🌟 NEW: Import this utility
+
 dotenv.config();
 const app = express();
-import path from "path";
+
+// 🌟 NEW: Properly define the absolute directory path for ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 app.use(cors());
 app.use(express.json({ limit: "30mb", extended: true }));
 app.use(express.urlencoded({ limit: "30mb", extended: true }));
-app.use("/uploads", express.static(path.join("uploads")));
+
+// 🌟 UPDATED: Use the absolute __dirname to unlock the uploads folder
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 app.get("/", (req, res) => {
   res.send("You tube backend is working");
 });
+
 app.use(bodyParser.json());
 app.use("/user", userroutes);
 app.use("/video", videoroutes);
@@ -26,6 +38,8 @@ app.use("/like", likeroutes);
 app.use("/watch", watchlaterroutes);
 app.use("/history", historyrroutes);
 app.use("/comment", commentroutes);
+app.use("/api/payment", paymentRoutes);
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
@@ -41,4 +55,3 @@ mongoose
   .catch((error) => {
     console.log(error);
   });
-
