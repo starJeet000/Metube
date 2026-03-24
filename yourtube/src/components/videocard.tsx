@@ -28,7 +28,7 @@ export default function VideoCard({ video }: any) {
             <p className="text-sm text-gray-600 mt-1">{video?.videochanel}</p>
             <p className="text-sm text-gray-600">
               {video?.views.toLocaleString()} views •{" "}
-              {formatDistanceToNow(new Date(video?.createdAt))} ago
+              {video?.createdAt ? formatDistanceToNow(new Date(video.createdAt)) : "Just now"} ago
             </p>
           </div>
         </div>
