@@ -13,11 +13,7 @@
   "type": "module",
   "dependencies": {
     "body-parser": "^2.2.0",
-<<<<<<< Updated upstream
     "cors": "^2.8.6",
-=======
-    "cors": "^2.8.5",
->>>>>>> Stashed changes
     "dotenv": "^16.6.1",
     "express": "^5.2.1",
     "express-fileupload": "^1.5.1",
@@ -25,11 +21,7 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^8.23.0",
     "multer": "^2.0.1",
-<<<<<<< Updated upstream
-    "nodemon": "^3.1.14"
-=======
-    "nodemon": "^3.1.10",
+    "nodemon": "^3.1.14",
     "razorpay": "^2.9.6"
->>>>>>> Stashed changes
   }
 }

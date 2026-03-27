@@ -1,3 +1,5 @@
+"use client"; //Added to enable React hooks and onClick events
+
 import { Bell, Menu, Mic, Search, User, VideoIcon } from "lucide-react";
 import React, { useState } from "react";
 import { Button } from "./ui/button";
@@ -12,31 +14,28 @@ import {
 } from "./ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import Channeldialogue from "./channeldialogue";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation"; //Fixed: MUST be next/navigation in Next.js 13+
 import { useUser } from "@/lib/AuthContext";
 
 const Header = () => {
   const { user, logout, handlegooglesignin } = useUser();
-  // const user: any = {
-  //   id: "1",
-  //   name: "John Doe",
-  //   email: "john@example.com",
-  //   image: "https://github.com/shadcn.png?height=32&width=32",
-  // };
   const [searchQuery, setSearchQuery] = useState("");
   const [isdialogeopen, setisdialogeopen] = useState(false);
   const router = useRouter();
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
     }
   };
+
   const handleKeypress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       handleSearch(e as any);
     }
   };
+
   return (
     <header className="flex items-center justify-between px-4 py-2 bg-white border-b">
       <div className="flex items-center gap-4">
@@ -80,9 +79,12 @@ const Header = () => {
       <div className="flex items-center gap-2">
         {user ? (
           <>
-            <Button variant="ghost" size="icon">
-              <VideoIcon className="w-6 h-6" />
-            </Button>
+            {/*Linked the VideoIcon to our new Upload Page! */}
+            <Link href="/upload">
+              <Button variant="ghost" size="icon">
+                <VideoIcon className="w-6 h-6" />
+              </Button>
+            </Link>
             <Button variant="ghost" size="icon">
               <Bell className="w-6 h-6" />
             </Button>
@@ -99,7 +101,8 @@ const Header = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end" forceMount>
-                {user?.channelname ? (
+                {/*Fixed: Checking channelName (camelCase) to match the database */}
+                {user?.channelName ? (
                   <DropdownMenuItem asChild>
                     <Link href={`/channel/${user?._id}`}>Your channel</Link>
                   </DropdownMenuItem>

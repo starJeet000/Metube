@@ -9,6 +9,7 @@ const Videogrid = () => {
     const fetchvideo = async () => {
       try {
         const res = await axiosInstance.get("/video/getall");
+        console.log("Backend sent this data:", res.data);
         setvideo(res.data);
       } catch (error) {
         console.log(error);
@@ -52,7 +53,7 @@ const Videogrid = () => {
       {loading ? (
         <>Loading..</>
       ) : (
-        videos.map((video: any) => <Videocard key={video._id} video={video} />)
+        videos?.map((video: any) => <Videocard key={video._id} video={video} />)
       )}
     </div>
   );
