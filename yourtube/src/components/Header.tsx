@@ -16,6 +16,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import Channeldialogue from "./channeldialogue";
 import { useRouter } from "next/navigation"; //Fixed: MUST be next/navigation in Next.js 13+
 import { useUser } from "@/lib/AuthContext";
+import PremiumButton from "./PremiumButton";
 
 const Header = () => {
   const { user, logout, handlegooglesignin } = useUser();
@@ -79,6 +80,7 @@ const Header = () => {
       <div className="flex items-center gap-2">
         {user ? (
           <>
+          <PremiumButton/>
             {/*Linked the VideoIcon to our new Upload Page! */}
             <Link href="/upload">
               <Button variant="ghost" size="icon">

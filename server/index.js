@@ -11,12 +11,12 @@ import historyrroutes from "./routes/history.js";
 import commentroutes from "./routes/comment.js";
 import paymentRoutes from "./routes/payment.js";
 import path from "path";
-import { fileURLToPath } from "url"; // 🌟 NEW: Import this utility
+import { fileURLToPath } from "url"; //Import this utility
 
 dotenv.config();
 const app = express();
 
-// 🌟 NEW: Properly define the absolute directory path for ES Modules
+//Properly define the absolute directory path for ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -24,7 +24,7 @@ app.use(cors());
 app.use(express.json({ limit: "30mb", extended: true }));
 app.use(express.urlencoded({ limit: "30mb", extended: true }));
 
-// 🌟 UPDATED: Use the absolute __dirname to unlock the uploads folder
+//Use the absolute __dirname to unlock the uploads folder
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.get("/", (req, res) => {
@@ -38,7 +38,7 @@ app.use("/like", likeroutes);
 app.use("/watch", watchlaterroutes);
 app.use("/history", historyrroutes);
 app.use("/comment", commentroutes);
-app.use("/api/payment", paymentRoutes);
+app.use("/payment", paymentRoutes);
 
 const PORT = process.env.PORT || 5000;
 
