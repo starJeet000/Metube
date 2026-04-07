@@ -37,3 +37,19 @@ export const getallvideo = async (req, res) => {
     return res.status(500).json({ message: "Something went wrong" });
   }
 };
+
+export const getvideobyid = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const singleVideo = await video.findById(id); // 'video' is your Mongoose model
+    
+    if (!singleVideo) {
+      return res.status(404).json({ message: "Video not found" });
+    }
+    
+    return res.status(200).json(singleVideo);
+  } catch (error) {
+    console.error("Get video by ID error:", error);
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+};

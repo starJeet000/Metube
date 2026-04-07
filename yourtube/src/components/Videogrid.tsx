@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Videocard from "./videocard";
 import axiosInstance from "@/lib/axiosinstance";
+import Link from "next/link"; //Import Link from Next.js
 
 const Videogrid = () => {
   const [videos, setvideo] = useState<any>(null);
@@ -48,12 +49,20 @@ const Videogrid = () => {
   //     createdAt: new Date(Date.now() - 86400000).toISOString(),
   //   },
   // ];
+  
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
       {loading ? (
         <>Loading..</>
       ) : (
-        videos?.map((video: any) => <Videocard key={video._id} video={video} />)
+        videos?.map((video: any) => (
+          /*Wrapped the Videocard in a Link to route to the new Video Player page */
+          <Link href={`/video/${video._id}`} key={video._id}>
+            <div className="cursor-pointer hover:opacity-90 transition-opacity">
+              <Videocard video={video} />
+            </div>
+          </Link>
+        ))
       )}
     </div>
   );
