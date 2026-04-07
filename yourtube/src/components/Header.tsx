@@ -16,22 +16,14 @@ import {
 } from "./ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import Channeldialogue from "./channeldialogue";
-import { useRouter } from "next/navigation"; //Fixed: MUST be next/navigation in Next.js 13+
+import { useRouter } from "next/router"; // 🌟 Fixed: Must be next/router for Pages router
 import { useUser } from "@/lib/AuthContext";
 import PremiumButton from "./PremiumButton";
 
 const Header = () => {
   const { user, logout, handlegooglesignin } = useUser();
-<<<<<<< HEAD
-=======
-  const { toggleSidebar } = useSidebar();
-  // const user: any = {
-  //   id: "1",
-  //   name: "John Doe",
-  //   email: "john@example.com",
-  //   image: "https://github.com/shadcn.png?height=32&width=32",
-  // };
->>>>>>> feature/task-2-premium-download
+  const { toggleSidebar } = useSidebar(); // 🌟 Fixed: Merge conflict cleanly resolved
+
   const [searchQuery, setSearchQuery] = useState("");
   const [isdialogeopen, setisdialogeopen] = useState(false);
   const router = useRouter();
@@ -52,7 +44,8 @@ const Header = () => {
   return (
     <header className="flex items-center justify-between px-4 py-2 bg-background text-foreground border-b">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon">
+        {/* 🌟 Fixed: Moved toggleSidebar to the actual left-side menu button */}
+        <Button variant="ghost" size="icon" onClick={toggleSidebar}>
           <Menu className="w-6 h-6" />
         </Button>
         <Link href="/" className="flex items-center gap-1">
@@ -92,18 +85,21 @@ const Header = () => {
       </form>
 
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={toggleSidebar}></Button>
-        <Menu className="w-6 h-6" />
-
         {user ? (
           <>
-          <PremiumButton/>
-            {/*Linked the VideoIcon to our new Upload Page! */}
-            <Link href="/upload">
-              <Button variant="ghost" size="icon">
-                <VideoIcon className="w-6 h-6" />
-              </Button>
-            </Link>
+            <PremiumButton />
+            {/* 🌟 Fixed: Brought back the safe anti-crash routing for the upload page! */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                if (router.pathname !== "/upload") {
+                  router.push("/upload");
+                }
+              }}
+            >
+              <VideoIcon className="w-6 h-6" />
+            </Button>
             <Button variant="ghost" size="icon">
               <Bell className="w-6 h-6" />
             </Button>
@@ -161,7 +157,7 @@ const Header = () => {
               Sign in
             </Button>
           </>
-        )}{" "}
+        )}
       </div>
       <Channeldialogue
         isopen={isdialogeopen}
