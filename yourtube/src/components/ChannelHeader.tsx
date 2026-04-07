@@ -4,6 +4,7 @@ import { Button } from "./ui/button";
 
 const ChannelHeader = ({ channel, user }: any) => {
   const [isSubscribed, setIsSubscribed] = useState(false);
+  
   return (
     <div className="w-full">
       {/* Banner */}
@@ -14,14 +15,16 @@ const ChannelHeader = ({ channel, user }: any) => {
         <div className="flex flex-col md:flex-row gap-6 items-start">
           <Avatar className="w-20 h-20 md:w-32 md:h-32">
             <AvatarFallback className="text-2xl">
-              {channel?.channelname[0]}
+              {/* 🌟 FIXED: Safely access the first letter and provide a fallback */}
+              {channel?.channelname?.[0]?.toUpperCase() || "U"}
             </AvatarFallback>
           </Avatar>
 
           <div className="flex-1 space-y-2">
-            <h1 className="text-2xl md:text-4xl font-bold">{channel?.channelname}</h1>
+            <h1 className="text-2xl md:text-4xl font-bold">{channel?.channelname || "Loading..."}</h1>
             <div className="flex flex-wrap gap-4 text-sm text-gray-600">
-              <span>@{channel?.channelname.toLowerCase().replace(/\s+/g, "")}</span>
+              {/* 🌟 FIXED: Added optional chaining before toLowerCase() to prevent a secondary crash */}
+              <span>@{channel?.channelname?.toLowerCase().replace(/\s+/g, "") || "user"}</span>
             </div>
             {channel?.description && (
               <p className="text-sm text-gray-700 max-w-2xl">

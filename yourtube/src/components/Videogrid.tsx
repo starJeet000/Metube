@@ -26,7 +26,7 @@ const Videogrid = () => {
   //     videotitle: "Amazing Nature Documentary",
   //     filename: "nature-doc.mp4",
   //     filetype: "video/mp4",
-  //     filepath: "/videos/nature-doc.mp4",
+  //     filepath: "server/uploads/christamas.mp4",
   //     filesize: "500MB",
   //     videochanel: "Nature Channel",
   //     Like: 1250,
