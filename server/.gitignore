@@ -1,18 +1,20 @@
+# Dependency folders
 node_modules/
-.env
-=======
-# Ignore dependency folders
-node_modules/
-server/node_modules/
-yourtube/node_modules/
 
-# Ignore environment variables (Secrets)
+# Environment variables (contains your MongoDB URI, JWT Secret, Razorpay Secret)
 .env
-server/.env
-yourtube/.env
 
-# Ignore build folders
-yourtube/.next/
-yourtube/out/
-yourtube/build/
->>>>>>> 0de3853 (feat: complete backend auth setup and fix git tracking)
+# 🌟 Local Video Storage
+# This ensures your recorded and uploaded videos stay on your machine
+# and don't bloat your GitHub repository.
+uploads/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Operating System files
+.DS_Store
+Thumbs.db

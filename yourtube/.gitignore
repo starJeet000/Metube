@@ -1,7 +1,7 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-/node_modules
+# Dependencies
+# Using 'node_modules/' instead of '/node_modules' ensures it is ignored 
+# in both your 'yourtube' and 'server' subdirectories.
+node_modules/
 /.pnp
 .pnp.*
 .yarn/*
@@ -10,32 +10,42 @@
 !.yarn/releases
 !.yarn/versions
 
-# testing
-/coverage
+# Next.js Build Output
+.next/
+out/
 
-# next.js
-/.next/
-/out/
+# Production/Backend Build Folders
+build/
+dist/
 
-# production
-/build
+# 🌟 CRITICAL: Local Video Uploads
+# This prevents your test videos in the server from being pushed to GitHub.
+server/uploads/
+uploads/
 
-# misc
-.DS_Store
-*.pem
-
-# debug
+# Debug Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# Environment Variables
+# Keep your secrets private!
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
 
-# vercel
+# Operating System Files
+.DS_Store
+Thumbs.db
+*.pem
+
+# Vercel & Deployment
 .vercel
 
-# typescript
+# TypeScript
 *.tsbuildinfo
 next-env.d.ts
