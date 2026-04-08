@@ -1,0 +1,19 @@
+# Dependency folders
+node_modules/
+server/node_modules/
+yourtube/node_modules/
+
+# Secrets
+.env
+server/.env
+yourtube/.env
+.env.local
+
+# Build outputs
+yourtube/.next/
+yourtube/out/
+yourtube/build/
+
+# Local Uploads
+server/uploads/
+uploads/

@@ -21,7 +21,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 app.use(cors({
-  origin: "https://you-tube2-0-six-backend.onrender.com/",
+  origin: "https://you-tube2-0-six.vercel.app/",
+  methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
 app.use(express.json({ limit: "30mb", extended: true }));

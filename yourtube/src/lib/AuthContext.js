@@ -1,4 +1,4 @@
-"use client"; //Required for Next.js to run React hooks
+"use client";
 
 import { onAuthStateChanged, signInWithPopup, signOut } from "firebase/auth";
 import { useState, createContext, useEffect, useContext } from "react";
@@ -9,8 +9,8 @@ const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true); // 🌟 Added loading state
 
-  //Updated to save the secure JWT token as well
   const login = (userdata, token) => {
     setUser(userdata);
     localStorage.setItem("user", JSON.stringify(userdata));
@@ -32,8 +32,6 @@ export const UserProvider = ({ children }) => {
 
   const handlegooglesignin = async () => {
     try {
-      // We ONLY trigger the Google popup here.
-      // We removed the duplicate backend call to prevent the race-condition crash.
       await signInWithPopup(auth, provider);
     } catch (error) {
       console.error("Popup Error:", error);
@@ -41,13 +39,12 @@ export const UserProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    // Check local storage so the UI doesn't blink when refreshing the page
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
+    setLoading(false);
 
-    //This listener acts as the single source of truth for backend communication
     const unsubcribe = onAuthStateChanged(auth, async (firebaseuser) => {
       if (firebaseuser) {
         try {
@@ -56,17 +53,17 @@ export const UserProvider = ({ children }) => {
             name: firebaseuser.displayName,
             image: firebaseuser.photoURL || "https://github.com/shadcn.png",
           };
+          
+          // 🌟 Verify your axiosInstance URL in .env.local!
           const response = await axiosInstance.post("/user/login", payload);
           login(response.data.result, response.data.token);
         } catch (error) {
-          console.error("Backend Error:", error);
-          logout();
+          console.error("Backend Auth Error. Check if your Render server is up and CORS is configured:", error);
+          // Only logout if it's a legitimate 401/403, otherwise keep local user to avoid loops
+          if (error.response?.status === 401 || error.response?.status === 403) {
+            logout();
+          }
         }
-      } else {
-        // If Firebase says we are logged out, clean everything up
-        setUser(null);
-        localStorage.removeItem("user");
-        localStorage.removeItem("token");
       }
     });
 
@@ -74,7 +71,7 @@ export const UserProvider = ({ children }) => {
   }, []);
 
   return (
-    <UserContext.Provider value={{ user, login, logout, handlegooglesignin }}>
+    <UserContext.Provider value={{ user, login, logout, handlegooglesignin, loading }}>
       {children}
     </UserContext.Provider>
   );
