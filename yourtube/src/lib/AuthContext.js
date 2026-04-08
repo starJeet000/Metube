@@ -53,13 +53,13 @@ export const UserProvider = ({ children }) => {
             name: firebaseuser.displayName,
             image: firebaseuser.photoURL || "https://github.com/shadcn.png",
           };
-          
+
           // 🌟 Verify your axiosInstance URL in .env.local!
           const response = await axiosInstance.post("/user/login", payload);
           login(response.data.result, response.data.token);
         } catch (error) {
-          console.error("Backend Auth Error. Check if your Render server is up and CORS is configured:", error);
-          // Only logout if it's a legitimate 401/403, otherwise keep local user to avoid loops
+          console.error("Backend Auth Error:", error);
+          // Only sign out if the backend explicitly rejects the user (401 or 403)
           if (error.response?.status === 401 || error.response?.status === 403) {
             logout();
           }

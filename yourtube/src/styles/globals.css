@@ -151,3 +151,13 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* Added Media Queries */
+
+@media (max-width: 1280px) {
+  /* Specific styles for screens smaller than 1280px (Laptops/Desktops) */
+}
+
+@media (max-width: 768px) {
+  /* Specific styles for screens smaller than 768px (Tablets/Mobile) */
+}
