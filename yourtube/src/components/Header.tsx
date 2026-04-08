@@ -44,7 +44,6 @@ const Header = () => {
   return (
     <header className="flex items-center justify-between px-4 py-2 bg-background text-foreground border-b">
       <div className="flex items-center gap-4">
-        {/* 🌟 Fixed: Moved toggleSidebar to the actual left-side menu button */}
         <Button variant="ghost" size="icon" onClick={toggleSidebar}>
           <Menu className="w-6 h-6" />
         </Button>
@@ -88,13 +87,13 @@ const Header = () => {
         {user ? (
           <>
             <PremiumButton />
-            {/* 🌟 Fixed: Brought back the safe anti-crash routing for the upload page! */}
+            {/* Updated: Now points to the Studio Page */}
             <Button
               variant="ghost"
               size="icon"
               onClick={() => {
-                if (router.pathname !== "/upload") {
-                  router.push("/upload");
+                if (router.pathname !== "/studio") {
+                  router.push("/studio");
                 }
               }}
             >
@@ -116,7 +115,6 @@ const Header = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end" forceMount>
-                {/*Fixed: Checking channelName (camelCase) to match the database */}
                 {user?.channelName ? (
                   <DropdownMenuItem asChild>
                     <Link href={`/channel/${user?._id}`}>Your channel</Link>
@@ -133,6 +131,10 @@ const Header = () => {
                     </Button>
                   </div>
                 )}
+                {/* Added: Studio Link in Dropdown */}
+                <DropdownMenuItem asChild>
+                  <Link href="/studio">Studio</Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link href="/history">History</Link>
                 </DropdownMenuItem>

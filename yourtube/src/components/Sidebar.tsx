@@ -1,4 +1,4 @@
-"use client"; //Added to enable React hooks
+"use client";
 
 import {
   Home,
@@ -8,13 +8,13 @@ import {
   ThumbsUp,
   History,
   User,
+  LayoutDashboard, //Added for Studio icon
 } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
 import { Button } from "./ui/button";
 import Channeldialogue from "./channeldialogue";
 import { useUser } from "@/lib/AuthContext";
-import PremiumButton from "./PremiumButton";
 import { useSidebar } from "@/lib/SidebarContext";
 
 const Sidebar = () => {
@@ -69,8 +69,15 @@ const Sidebar = () => {
                   Watch later
                 </Button>
               </Link>
+
+              {/*ADDED: Studio Link for Creators */}
+              <Link href="/studio">
+                <Button variant="ghost" className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50">
+                  <LayoutDashboard className="w-5 h-5 mr-3" />
+                  Studio
+                </Button>
+              </Link>
               
-              {/* 🌟 Fixed: Checking channelName and using _id so the link works! */}
               {user?.channelName ? (
                 <Link href={`/channel/${user._id}`}>
                   <Button variant="ghost" className="w-full justify-start">

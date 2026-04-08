@@ -41,15 +41,68 @@ export const getallvideo = async (req, res) => {
 export const getvideobyid = async (req, res) => {
   try {
     const { id } = req.params;
-    const singleVideo = await video.findById(id); // 'video' is your Mongoose model
-    
+
+    // 🌟 This line finds the video AND adds 1 to the 'views' field in one go
+    // { new: true } ensures the response includes the updated number
+    const singleVideo = await video.findByIdAndUpdate(
+      id,
+      { $inc: { views: 1 } },
+      { new: true }
+    );
+
     if (!singleVideo) {
       return res.status(404).json({ message: "Video not found" });
     }
-    
+
     return res.status(200).json(singleVideo);
   } catch (error) {
-    console.error("Get video by ID error:", error);
+    console.error("View count error:", error);
     return res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+export const likeVideo = async (req, res) => {
+  try {
+    const { id } = req.params; // Video ID
+    const { userId } = req.body; // Logged in User ID
+
+    const targetVideo = await video.findById(id);
+    if (!targetVideo) return res.status(404).json({ message: "Video not found" });
+
+    // 1. If user already liked it, clicking again removes the like (toggle)
+    if (targetVideo.likes.includes(userId)) {
+      targetVideo.likes = targetVideo.likes.filter((uid) => uid.toString() !== userId);
+    } else {
+      // 2. Add like and remove from dislikes if they were there
+      targetVideo.likes.push(userId);
+      targetVideo.dislikes = targetVideo.dislikes.filter((uid) => uid.toString() !== userId);
+    }
+
+    await targetVideo.save();
+    res.status(200).json(targetVideo);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const dislikeVideo = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { userId } = req.body;
+
+    const targetVideo = await video.findById(id);
+    if (!targetVideo) return res.status(404).json({ message: "Video not found" });
+
+    if (targetVideo.dislikes.includes(userId)) {
+      targetVideo.dislikes = targetVideo.dislikes.filter((uid) => uid.toString() !== userId);
+    } else {
+      targetVideo.dislikes.push(userId);
+      targetVideo.likes = targetVideo.likes.filter((uid) => uid.toString() !== userId);
+    }
+
+    await targetVideo.save();
+    res.status(200).json(targetVideo);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };

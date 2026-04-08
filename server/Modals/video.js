@@ -1,4 +1,6 @@
-import mongoose from "mongoose";
+import mongoose, { mongo } from "mongoose";
+import { type } from "node:os";
+import { ref } from "node:process";
 
 const videochema = mongoose.Schema(
   {
@@ -11,6 +13,20 @@ const videochema = mongoose.Schema(
     Like: { type: Number, default: 0 },
     views: { type: Number, default: 0 },
     uploader: { type: String },
+    likes:{
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: 'User',
+      default: []
+    },
+    dislikes: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: 'User',
+      default: [],
+    },
+    views: {
+      type: Number,
+      default: 0
+    }
   },
   {
     timestamps: true,

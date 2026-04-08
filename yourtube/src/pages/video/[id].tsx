@@ -4,16 +4,18 @@ import axiosInstance from "@/lib/axiosinstance";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Loader2, ThumbsUp, ThumbsDown, Share2 } from "lucide-react";
+import { useUser } from "@/lib/AuthContext";
+import Comments from "@/components/Comments"; // 🌟 Added
 
 export default function VideoPlayerPage() {
   const router = useRouter();
-  const { id } = router.query; // Grabs the video ID from the URL
+  const { id } = router.query; 
+  const { user } = useUser();
 
   const [videoData, setVideoData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Only fetch if the ID is ready
     if (!id) return;
 
     const fetchVideo = async () => {
@@ -29,6 +31,30 @@ export default function VideoPlayerPage() {
 
     fetchVideo();
   }, [id]);
+
+  // Logic to check if the current user has liked/disliked
+  const isLiked = videoData?.likes?.some((likeId: any) => likeId.toString() === user?._id?.toString());
+  const isDisliked = videoData?.dislikes?.some((disId: any) => disId.toString() === user?._id?.toString());
+
+  const handleLike = async () => {
+    if (!user) return alert("Please sign in to like videos!");
+    try {
+      const res = await axiosInstance.put(`/video/like/${id}`, { userId: user._id });
+      setVideoData(res.data); 
+    } catch (error) {
+      console.error("Like failed", error);
+    }
+  };
+
+  const handleDislike = async () => {
+    if (!user) return alert("Please sign in to dislike videos!");
+    try {
+      const res = await axiosInstance.put(`/video/dislike/${id}`, { userId: user._id });
+      setVideoData(res.data);
+    } catch (error) {
+      console.error("Dislike failed", error);
+    }
+  };
 
   if (loading) {
     return (
@@ -48,7 +74,6 @@ export default function VideoPlayerPage() {
         
         {/* Left Side: Video Player & Details */}
         <div className="flex-1">
-          {/* THE ACTUAL HTML5 VIDEO PLAYER */}
           <div className="bg-black rounded-xl overflow-hidden shadow-md">
             <video
               src={`${process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000"}/uploads/${videoData.filepath}`}
@@ -60,12 +85,14 @@ export default function VideoPlayerPage() {
             </video>
           </div>
 
-          {/* Video Metadata */}
           <div className="mt-4 space-y-4">
             <h1 className="text-2xl font-bold text-gray-900">{videoData.videotitle}</h1>
             
+            <p className="text-sm text-gray-500">
+              {videoData.views?.toLocaleString() || 0} views • {new Date(videoData.createdAt).toLocaleDateString()}
+            </p>
+            
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              {/* Channel Info */}
               <div className="flex items-center gap-3">
                 <Avatar className="w-10 h-10 border">
                   <AvatarFallback className="bg-blue-100 text-blue-600 font-bold">
@@ -81,15 +108,25 @@ export default function VideoPlayerPage() {
                 </Button>
               </div>
 
-              {/* Engagement Buttons */}
               <div className="flex items-center gap-2">
                 <div className="flex items-center bg-gray-100 rounded-full">
-                  <Button variant="ghost" className="rounded-l-full px-4 hover:bg-gray-200 flex gap-2">
-                    <ThumbsUp className="w-4 h-4" /> 12K
+                  <Button 
+                    variant="ghost" 
+                    onClick={handleLike}
+                    className={`rounded-l-full px-4 hover:bg-gray-200 flex gap-2 ${isLiked ? "text-blue-600 font-bold" : "text-gray-700"}`}
+                  >
+                    <ThumbsUp className={`w-4 h-4 ${isLiked ? "fill-blue-600" : ""}`} /> 
+                    {videoData.likes?.length || 0}
                   </Button>
+                  
                   <div className="w-[1px] h-6 bg-gray-300"></div>
-                  <Button variant="ghost" className="rounded-r-full px-4 hover:bg-gray-200">
-                    <ThumbsDown className="w-4 h-4" />
+                  
+                  <Button 
+                    variant="ghost" 
+                    onClick={handleDislike}
+                    className={`rounded-r-full px-4 hover:bg-gray-200 ${isDisliked ? "text-red-600 font-bold" : "text-gray-700"}`}
+                  >
+                    <ThumbsDown className={`w-4 h-4 ${isDisliked ? "fill-red-600" : ""}`} />
                   </Button>
                 </div>
                 <Button variant="ghost" className="bg-gray-100 rounded-full hover:bg-gray-200 flex gap-2">
@@ -98,9 +135,12 @@ export default function VideoPlayerPage() {
               </div>
             </div>
           </div>
+
+          {/* 🌟 Added Comments Section */}
+          <Comments videoId={id as string} />
         </div>
 
-        {/* Right Side: Recommended Videos (Placeholder for now) */}
+        {/* Right Side: Recommended Videos (Skeleton) */}
         <div className="lg:w-[350px] hidden lg:block">
           <h3 className="font-bold mb-4">Up Next</h3>
           <div className="animate-pulse space-y-4">
